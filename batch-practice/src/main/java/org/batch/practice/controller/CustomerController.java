@@ -2,6 +2,7 @@ package org.batch.practice.controller;
 
 import javax.validation.Valid;
 
+import org.batch.practice.amq.Producer;
 import org.batch.practice.model.Customer;
 import org.batch.practice.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,15 @@ public class CustomerController {
 
 	@Autowired
 	CustomerRepository repository;
-
-	@PostMapping("/save")
-	public String process(@Valid @RequestBody Customer customer) {
-
-		/*
-		 * repository.save(Arrays.asList(new Customer("Jack", 20, "SAVING", 20000D)));
-		 */
-
-		repository.save(customer);
-		return "Customer details saved successfully !";
+	
+	@Autowired
+	Producer producer;
+	
+	@PostMapping("/post-customer")
+	public String postCustomer(@Valid @RequestBody Customer customer) {
+		System.out.println("########## In postCustomer");
+		String message = producer.publish(customer);
+		return message;
 	}
 
 	@GetMapping("/findall")
